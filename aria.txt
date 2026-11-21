@@ -1,0 +1,34 @@
+using Microsoft.Playwright;
+
+namespace PlayWright1
+{
+    public class Aria
+    {
+        [Test]
+        public async Task Test1()
+        {
+            // declare Playwright variable
+            var playwright = await Playwright.CreateAsync();
+
+            // Browser process initialize
+            var browser = await playwright.Chromium.LaunchAsync(
+                new BrowserTypeLaunchOptions
+                {
+                    Headless = false
+                });
+            //browse context
+            var context = await browser.NewContextAsync();
+            //pg 
+            var page = await context.NewPageAsync();
+
+            await page.GotoAsync("https://www.saucedemo.com/");
+            await page.GetByRole(AriaRole.Textbox, new() { Name = "Username" }).FillAsync("standard_user");
+            await page.GetByRole(AriaRole.Textbox, new() { Name = "Password" }).FillAsync("secret_sauce");
+            //await page.FillAsync("#user-name", "standard_user");
+            //await page.FillAsync("#password", "secret_sauce");
+            await page.ClickAsync("#login-button");
+            Assert.That(await page.InnerTextAsync("//span[@class='title']"), Is.EqualTo("Products"));
+            await Task.Delay(-1);
+        }
+    }
+}
